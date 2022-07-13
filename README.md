@@ -1,13 +1,15 @@
 ## Spring Boot Signup & Login with JWT Authentication Flow
 Sơ đồ hiển thị cách thực hiện việc đăng ký, đăng nhập và ủy quyền như thế nào.
+
 ![Spring boot sigup & signin with Jwt Auth Flow](https://bezkoder.com/wp-content/uploads/2019/10/spring-boot-authentication-jwt-spring-security-flow.png)
 
-Một Jwt hợp lệ phải được thêm vào HTTP Authorization Header nếu người dùng muốn truy cập các tài nguyên được security được bảo vệ.
+Một Jwt hợp lệ phải được thêm vào HTTP Authorization Header nếu người dùng muốn truy cập các tài nguyên được security(bảo vệ).
 Bạn sẽ cần thực hiện việc refresh token.
+
 ![Spring boot refresh token](https://www.bezkoder.com/wp-content/uploads/2021/04/spring-boot-refresh-token-jwt-example-flow.png)
 
 ## Spring Boot Server Architecture with Spring Security
-Bạn có thể có một cái nhìn tổng quan về Spring Boot Server với sơ dồ bên dưới.
+Bạn có thể có một cái nhìn tổng quan về Spring Boot Server với sơ đồ bên dưới.
 ![Spring boot server Architecture with Spring Security](https://www.bezkoder.com/wp-content/uploads/2019/10/spring-boot-authentication-spring-security-architecture.png)
 
 ### Spring Security
@@ -15,9 +17,9 @@ Bạn có thể có một cái nhìn tổng quan về Spring Boot Server với s
 
 - **UserDetailsService** interface có một phương thức để load người dùng theo tên và trả về đối tượng UserDetails mà Spring Security có thể sử dụng để authentication và validation.
 
-- **UserDetails** chứa thông tin cần thiết (như: username. password, atuhorities) để xây dựng  một Authentication object.
+- **UserDetails** chứa thông tin cần thiết (như: username. password, authorities) để xây dựng một Authentication object.
 
-- **UsernamePassWordAuthenticationToken** gets{username, password} từ login request, AuthenticationManager sẽ sử dụng nó để xác thực tài khoản đăng nhập.
+- **UsernamePassWordAuthenticationToken** get {username, password} từ login request, AuthenticationManager sẽ sử dụng nó để xác thực tài khoản đăng nhập.
 
 - **AuthenticationManager** có DaoAuthenticationProvider (với sự trợ giúp của UserDetailsService và PasswordEncoder) để xác thực UsernamePasswordAuthenticationToken object. Nếu thành công, AuthenticationManager trả về một fully populated Authentication object(bao gồm các authorities được cấp).
 
@@ -25,13 +27,12 @@ Bạn có thể có một cái nhìn tổng quan về Spring Boot Server với s
 
 -  **AuthenticationEntryPoint** will catch authentication error.
 
-**Repository** bao gồm UserRepository và RoleRepository để làm việc với DB, và import và trong Controller.
+**Repository** bao gồm UserRepository và RoleRepository để làm việc với DB, và import vào trong Controller.
 **Controller** nhận và xử lý yêu cầu sau khi nó được lọc bởi OncePerRequestFilter.
 – AuthController xử lý signup/login requests
 – TestController truy cập các phương thức và tài nguyên được bảo vệ với vai trò đã được xác nhận.
 
-##
-# Project Structure
+### Project Structure
 ![Project Structure](https://www.bezkoder.com/wp-content/uploads/2019/10/spring-boot-authentication-spring-security-project-structure.png)
 
 **security pakage** cấu hình và triển khai security object ở đây.
@@ -333,10 +334,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 - **@EnableWebSecurity** cho phép spring tìm và tự động áp dụng class vào The global Web Security.
 - **@EnableGlobalMethodSecurity** cung cấp AOP security trên các phương thức. Nó enable @PreAuthorize và @PostAuthorize, Nó cũng hỗ trợ JSR-250. Bạn có thể tìm thấy nhiều tham số hơn trong cấu hình Method Security Expressions. 
-- Tôi ghi đè phương thức cấu hình (HttpSecurity http) từ WebSecurityConfigerAdapter interface. Nó cho Spring Security biết cách tôi cấu hình cors và csrf, khi tôi muốn yêu cầu tất cả người dùng được xác thực hay không, Bộ filter nào (AuthTokenFilter), khi tôi muốn nó hoạt động (filter before UsernamePasswordAuthenticationFilter) và Exception Handler nào được chọn(AuthEntryPointJwt).
-- Spring Security sẽ load chi tiết người dùng để thực hiện authentication & authorization. Vì vậy, nó có UserDetailSService interface thứ tôi cần để thực hiện.
--Việc triển khai UserDetailSService sẽ được sử dụng để cấu hình DaoAuthenticationProvider bằng phương thức AuthenticationManagerBuilder.userDetailsService().
-- tôi cũng cần một PasswordEncoder cho DaoAuthenticationProvider. Nếu tôi không chỉ định, nó sẽ sử dụng văn bản thuần túy.
+- Override phương thức configure (HttpSecurity http) từ WebSecurityConfigerAdapter interface. Nó cho Spring Security biết cách tôi cấu hình cors và csrf, khi tôi muốn yêu cầu tất cả người dùng được xác thực hay không, Bộ filter nào (AuthTokenFilter), khi tôi muốn nó hoạt động (filter before UsernamePasswordAuthenticationFilter) và Exception Handler nào được chọn(AuthEntryPointJwt).
+- Spring Security sẽ đọc chi tiết người dùng để thực hiện authentication & authorization. Tôi có UserDetailSService interface để thực hiện nhiệm vụ này.
+- Việc triển khai UserDetailSService sẽ được sử dụng để cấu hình DaoAuthenticationProvider bằng phương thức AuthenticationManagerBuilder.userDetailsService().
+- Tôi cũng cần một PasswordEncoder cho DaoAuthenticationProvider.
 
 ### Implement UserDetails & UserDetailsService
 Nếu quá trình xác thực thành công, tôi có thể lấy được thông tin của người dùng như username, password, authorities từ Authentication object.
@@ -592,7 +593,7 @@ public class JwtUtils {
 Nhớ rằng tôi đã thêm pc.app.jwtsecret và pc.app.jwtexpirationmss trong application.properies.
 
 ### Handle Authentication Exception
-Giờ tôi tạo ra AuthEntryPointJwt class nó implement AuthenticationEntryPoint interface. Sau đó, tôi override commence() phương thức. Phương thức này sẽ được kich hoạt bất cứ lúc nào người dùng không được xác thực muốn truy cập tài nguyên được bảo vệ và AuthenticationExeption sẽ được ném ra.
+Giờ tôi tạo ra AuthEntryPointJwt class nó implement AuthenticationEntryPoint interface. Sau đó, tôi override phương thức commence(). Phương thức này sẽ được kích hoạt bất cứ lúc nào người dùng chưa được xác thực muốn truy cập tài nguyên được bảo vệ và AuthenticationExeption sẽ được ném ra.
 security/jwt/AuthEntryPointJwt.java
 ```
 import java.io.IOException;
