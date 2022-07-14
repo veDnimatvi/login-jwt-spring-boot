@@ -22,16 +22,16 @@ public class JwtResponse {
         return token;
     }
 
-    public void setAccessToken(String token) {
-        this.token = token;
+    public void setAccessToken(String accessToken) {
+        this.token = accessToken;
     }
 
     public String getTokenType() {
         return type;
     }
 
-    public void setTokenType(String type) {
-        this.type = type;
+    public void setTokenType(String tokenType) {
+        this.type = tokenType;
     }
 
     public Long getId() {

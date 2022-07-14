@@ -1,6 +1,7 @@
 package com.example.springsecurity.models;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
@@ -22,6 +23,7 @@ public class User {
 
     @NotBlank
     @Size(max = 50)
+    @Email
     private String email;
 
     @NotBlank
